@@ -2735,3 +2735,186 @@ html[data-a11y-scheme="yellow"] .shimmer {
   }
 }
 
+/* =========================================================
+   Вторая волна: детали и пасхалки (добавлено)
+   ========================================================= */
+
+/* ---------- Тилт карточек за курсором ---------- */
+.principle.tilt:hover,
+.home-link.tilt:hover,
+.home-link.tilt:focus-visible {
+  transform: perspective(760px) translateY(-2px) rotateX(var(--ty, 0deg)) rotateY(var(--tx, 0deg));
+}
+.home-link.tilt:hover,
+.home-link.tilt:focus-visible {
+  transform: perspective(760px) translateY(-4px) rotateX(var(--ty, 0deg)) rotateY(var(--tx, 0deg));
+}
+.principle.tilt,
+.home-link.tilt {
+  transform-style: preserve-3d;
+}
+
+/* ---------- «Эхо диалога»: круг на месте нажатия ---------- */
+.ping {
+  position: fixed;
+  z-index: 180;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border: 2px solid var(--emerald-500);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ---------- Параллакс точек в «герое» ---------- */
+.hero::before {
+  transform: translateY(var(--hero-parallax, 0px));
+  will-change: transform;
+}
+
+/* ---------- Логотип: нажатие и «танец» ---------- */
+.brand__mark {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+.brand__mark.is-pressing svg {
+  transform: scale(0.9) rotate(-6deg);
+}
+.brand__mark svg {
+  transition: transform 0.35s var(--ease);
+}
+@keyframes logo-dance {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  20% { transform: rotate(-9deg) translateY(-2px); }
+  40% { transform: rotate(8deg); }
+  60% { transform: rotate(-6deg) translateY(-3px); }
+  80% { transform: rotate(6deg) translateY(-1px); }
+}
+.brand__mark.is-dancing svg {
+  animation: logo-dance 1.1s var(--ease);
+}
+
+/* ---------- Пункты мобильного меню въезжают по очереди ---------- */
+.mobile-menu.is-open .mobile-menu__nav a {
+  animation: menu-item-in 0.5s var(--ease) both;
+}
+.mobile-menu.is-open .mobile-menu__nav a:nth-child(1) { animation-delay: 0.04s; }
+.mobile-menu.is-open .mobile-menu__nav a:nth-child(2) { animation-delay: 0.09s; }
+.mobile-menu.is-open .mobile-menu__nav a:nth-child(3) { animation-delay: 0.14s; }
+.mobile-menu.is-open .mobile-menu__nav a:nth-child(4) { animation-delay: 0.19s; }
+.mobile-menu.is-open .mobile-menu__nav a:nth-child(5) { animation-delay: 0.24s; }
+@keyframes menu-item-in {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+
+/* ---------- Часы МСК и трекер секретов в подвале ---------- */
+.footer__clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: #8fb7a8;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.footer__clock-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  background: var(--emerald-500);
+  border-radius: 50%;
+  animation: visit-pulse 2.2s infinite;
+}
+.footer__eggs {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: #9fc3b4;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Фраза дня: кнопка «сказать иначе» ---------- */
+.footer__motto {
+  cursor: default;
+}
+.footer__motto-text {
+  transition: opacity 0.3s;
+}
+.footer__motto.is-shuffling .footer__motto-text {
+  animation: motto-fade 0.4s var(--ease);
+}
+@keyframes motto-fade {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+}
+.footer__motto-shuffle {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  color: var(--mint);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(169, 237, 207, 0.3);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.35s var(--ease), background-color 0.2s, border-color 0.2s;
+}
+.footer__motto-shuffle:hover,
+.footer__motto-shuffle:focus-visible {
+  transform: rotate(180deg);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(169, 237, 207, 0.6);
+}
+.footer__motto-shuffle:active {
+  transform: rotate(180deg) scale(0.92);
+}
+.footer__motto-shuffle svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ---------- Отступы под «челку» и жесты iPhone ---------- */
+.to-top {
+  right: calc(clamp(14px, 3vw, 26px) + env(safe-area-inset-right, 0px));
+  bottom: calc(clamp(14px, 3vw, 26px) + env(safe-area-inset-bottom, 0px));
+}
+.toast-zone {
+  bottom: calc(clamp(18px, 4vw, 32px) + env(safe-area-inset-bottom, 0px));
+}
+
+/* ---------- Версия для слабовидящих: новые элементы ---------- */
+html[data-a11y-scheme="yellow"] .footer__motto-shuffle,
+html[data-a11y-scheme="yellow"] .footer__clock-dot {
+  background-color: transparent !important;
+  border-color: #ffdf00 !important;
+  color: #ffdf00 !important;
+}
+html[data-a11y-scheme="yellow"] .footer__motto-shuffle svg {
+  stroke: #ffdf00 !important;
+}
+html[data-a11y-font] .footer__motto {
+  overflow-wrap: anywhere;
+}
+
+@media print {
+  .ping,
+  .footer__motto-shuffle,
+  .footer__clock {
+    display: none !important;
+  }
+}
+
+

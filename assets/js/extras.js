@@ -1,6 +1,8 @@
 /* =========================================================
    Дизайн-детали и пасхалки школьной службы медиации
    Ничего критичного: если что-то не сработало — сайт живёт как жил.
+   Настольные: тилт карточек, «эхо диалога», параллакс, часы МСК.
+   Телефонные: встряска, два пальца, долгое нажатие на логотип.
    ========================================================= */
 (() => {
   "use strict";
@@ -10,7 +12,21 @@
 
   const root = document.documentElement;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const finePointer = !window.matchMedia("(pointer: coarse)").matches;
   const EGGS_KEY = "sh84-eggs-found";
+
+  /* Каталог секретов для трекера в подвале */
+  const EGG_LIST = {
+    "peace-code": "код мира (↑↑↓↓←→←→BA или «мир»)",
+    "logo-talk": "три клика по логотипу",
+    "logo-longpress": "долгое нажатие на логотип",
+    "thanks-word": "волшебное слово",
+    "school84": "число школы",
+    "shake-it": "встряска конфликта",
+    "two-parties": "две стороны за столом",
+    "motto-mix": "другая формулировка",
+  };
+  const EGG_TOTAL = Object.keys(EGG_LIST).length;
 
   const safe = (fn) => {
     try {
@@ -41,31 +57,61 @@
     }, 4600);
   };
 
-  const countEgg = (name) => {
-    let found = [];
+  /* ---------- Учёт найденных пасхалок ---------- */
+  const readEggs = () => {
     try {
-      found = JSON.parse(localStorage.getItem(EGGS_KEY) || "[]");
-    } catch (error) {}
+      const list = JSON.parse(localStorage.getItem(EGGS_KEY) || "[]");
+      return Array.isArray(list) ? list : [];
+    } catch (error) {
+      return [];
+    }
+  };
+
+  let trackerNode = null;
+  const renderTracker = () => {
+    const legal = document.querySelector(".footer__legal");
+    if (!legal) return;
+    const found = readEggs().filter((name) => EGG_LIST[name]);
+    if (!found.length) return;
+    if (!trackerNode) {
+      trackerNode = document.createElement("p");
+      trackerNode.className = "footer__eggs";
+      legal.appendChild(trackerNode);
+    }
+    trackerNode.textContent = "";
+    const icon = document.createElement("span");
+    icon.textContent = "🔎";
+    icon.setAttribute("aria-hidden", "true");
+    trackerNode.appendChild(icon);
+    trackerNode.appendChild(
+      document.createTextNode(`Найдено секретов: ${found.length} из ${EGG_TOTAL}`)
+    );
+    trackerNode.title = `Открыто: ${found
+      .map((name) => EGG_LIST[name])
+      .join(" · ")}. Сайт службы — тоже место для переговоров.`;
+  };
+
+  const countEgg = (name) => {
+    const found = readEggs();
     if (!found.includes(name)) {
       found.push(name);
       try {
         localStorage.setItem(EGGS_KEY, JSON.stringify(found));
       } catch (error) {}
     }
+    renderTracker();
     return found.length;
   };
 
-  /* ---------- «Дождь мира»: 🕊️ 🤝 🌿 ✨ ---------- */
-  const dropPeace = (amount = 30) => {
-    if (reduced) {
-      toast("Пусть в ваших переговорах будет мир 🤝");
-      return;
-    }
+  /* ---------- «Дождь мира» и его варианты ---------- */
+  const PEACE_GLYPHS = ["🕊️", "🤝", "🌿", "✨", "💚"];
+  const HEART_GLYPHS = ["💛", "💚", "🤝", "✨", "🌟"];
+  const dropPeace = (amount = 30, glyphs = PEACE_GLYPHS) => {
+    if (reduced) return;
     const layer = document.createElement("div");
     layer.className = "egg-drop";
     layer.setAttribute("aria-hidden", "true");
     document.body.appendChild(layer);
-    const glyphs = ["🕊️", "🤝", "🌿", "✨", "💚"];
     for (let i = 0; i < amount; i += 1) {
       const flake = document.createElement("span");
       flake.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
@@ -184,20 +230,95 @@
   /* ---------- Подсветка в «шапке-герое» следует за курсором ---------- */
   safe(() => {
     const hero = document.querySelector(".hero");
-    if (!hero || reduced || !window.matchMedia("(pointer: fine)").matches) return;
-    let frame = 0;
+    if (!hero || reduced || !finePointer) return;
     hero.addEventListener("pointermove", (event) => {
       const rect = hero.getBoundingClientRect();
       hero.style.setProperty("--mx", `${event.clientX - rect.left}px`);
       hero.style.setProperty("--my", `${event.clientY - rect.top}px`);
-      if (!frame) {
-        frame = window.requestAnimationFrame(() => {
-          frame = 0;
-          hero.classList.add("has-spotlight");
-        });
-      }
+      hero.classList.add("has-spotlight");
     });
     hero.addEventListener("pointerleave", () => hero.classList.remove("has-spotlight"));
+  });
+
+  /* ---------- Параллакс точек в «герое» ---------- */
+  safe(() => {
+    const hero = document.querySelector(".hero");
+    if (!hero || reduced) return;
+    let frame = 0;
+    const paint = () => {
+      frame = 0;
+      hero.style.setProperty("--hero-parallax", `${Math.round(window.scrollY * -0.06)}px`);
+    };
+    window.addEventListener("scroll", () => {
+      if (!frame) frame = window.requestAnimationFrame(paint);
+    }, { passive: true });
+    paint();
+  });
+
+  /* ---------- Тилт карточек (только мышь) ---------- */
+  safe(() => {
+    if (reduced || !finePointer) return;
+    document.querySelectorAll(".principle, .home-link").forEach((card) => {
+      card.classList.add("tilt");
+      card.addEventListener("pointermove", (event) => {
+        const rect = card.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+        card.style.setProperty("--tx", `${(x * 5).toFixed(2)}deg`);
+        card.style.setProperty("--ty", `${(y * -5).toFixed(2)}deg`);
+      });
+      card.addEventListener("pointerleave", () => {
+        card.style.setProperty("--tx", "0deg");
+        card.style.setProperty("--ty", "0deg");
+      });
+    });
+  });
+
+  /* ---------- «Эхо диалога»: круг на месте нажатия ---------- */
+  safe(() => {
+    if (reduced) return;
+    document.addEventListener("pointerdown", (event) => {
+      if (event.target.closest("a, button, input, textarea, select, label, .a11y-option")) return;
+      const ping = document.createElement("span");
+      ping.className = "ping";
+      ping.setAttribute("aria-hidden", "true");
+      ping.style.left = `${event.clientX}px`;
+      ping.style.top = `${event.clientY}px`;
+      document.body.appendChild(ping);
+      ping.animate(
+        [
+          { transform: "scale(0.4)", opacity: 0.45 },
+          { transform: "scale(5.2)", opacity: 0 },
+        ],
+        { duration: 620, easing: "cubic-bezier(.2,.6,.4,1)" }
+      ).onfinish = () => ping.remove();
+    });
+  });
+
+  /* ---------- Часы приёма: московское время в подвале ---------- */
+  safe(() => {
+    const legal = document.querySelector(".footer__legal");
+    if (!legal) return;
+    const clock = document.createElement("p");
+    clock.className = "footer__clock";
+    clock.title = "Служба живёт по московскому времени";
+    const dot = document.createElement("span");
+    dot.className = "footer__clock-dot";
+    dot.setAttribute("aria-hidden", "true");
+    clock.appendChild(dot);
+    const text = document.createElement("span");
+    clock.appendChild(text);
+    const tick = () => {
+      const time = new Intl.DateTimeFormat("ru-RU", {
+        timeZone: "Europe/Moscow",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date());
+      text.textContent = `МСК · ${time}`;
+    };
+    tick();
+    window.setInterval(tick, 30000);
+    legal.appendChild(clock);
   });
 
   /* ---------- «Сейчас приём»: живой индикатор расписания (МСК) ---------- */
@@ -252,7 +373,7 @@
     else card.prepend(badge);
   });
 
-  /* ---------- Фраза дня в подвале ---------- */
+  /* ---------- Фраза дня в подвале (можно перетасовать) ---------- */
   safe(() => {
     const footer = document.querySelector(".site-footer .container");
     const legal = document.querySelector(".footer__legal");
@@ -273,15 +394,45 @@
     ];
     const now = new Date();
     const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
-    const motto = MOTTO[dayOfYear % MOTTO.length];
+    let current = dayOfYear % MOTTO.length;
+
     const line = document.createElement("p");
     line.className = "footer__motto";
+    line.title = "Нажмите ↻ — скажем иначе";
     const label = document.createElement("span");
     label.className = "footer__motto-label";
     label.textContent = "Фраза дня";
     line.appendChild(label);
-    line.appendChild(document.createTextNode(motto));
+    const text = document.createElement("span");
+    text.className = "footer__motto-text";
+    text.textContent = MOTTO[current];
+    line.appendChild(text);
+    const shuffle = document.createElement("button");
+    shuffle.type = "button";
+    shuffle.className = "footer__motto-shuffle";
+    shuffle.setAttribute("aria-label", "Показать другую фразу");
+    shuffle.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>';
+    line.appendChild(shuffle);
     legal.before(line);
+
+    let mixes = 0;
+    const remix = () => {
+      let next = current;
+      while (next === current) next = Math.floor(Math.random() * MOTTO.length);
+      current = next;
+      mixes += 1;
+      line.classList.remove("is-shuffling");
+      void line.offsetWidth;
+      line.classList.add("is-shuffling");
+      text.textContent = MOTTO[current];
+      if (mixes === 1) {
+        countEgg("motto-mix");
+        toast("Формулировки — тоже переговоры. Ещё разок? ↻");
+      }
+    };
+    shuffle.addEventListener("click", remix);
+    text.addEventListener("dblclick", remix);
   });
 
   /* ---------- Фавиконка и заголовок, когда вкладка уходит «на переговоры» ---------- */
@@ -308,62 +459,72 @@
     if (fav) fav.dataset.originalHref = fav.getAttribute("href");
   });
 
-  /* ---------- Приветствие в консоли для любопытных ---------- */
-  safe(() => {
-    if (reduced) return;
-    console.log(
-      "%c        ╭─────────────╮         ╭─────────────╮\n" +
-        "        │  «Здравствуйте!»  │───│  «Здравствуйте!»  │\n" +
-        "        ╰─────────────╯         ╰─────────────╯",
-      "color:#1e9a78;font-weight:bold;font-family:monospace"
-    );
-    console.log(
-      "%cВы заглянули под капот школьной службы медиации. И правильно: здесь всё открыто.\n" +
-        "%cНайдите «код мира»: ↑ ↑ ↓ ↓ ← → ← → B A\n" +
-        "%c…или просто наберите на клавиатуре слово: мир",
-      "color:#0f241e;font-size:12px",
-      "color:#15785e;font-size:12px;font-weight:bold",
-      "color:#15785e;font-size:12px"
-    );
-  });
-
-  /* ---------- Код мира: Konami или слово «мир» ---------- */
+  /* ---------- Кодовые слова и код мира ---------- */
   safe(() => {
     const KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
     let progress = 0;
     let typed = "";
-    let triggered = false;
-    const fire = () => {
-      if (triggered) return;
-      triggered = true;
+    let fired = 0;
+
+    const firePeace = () => {
       const total = countEgg("peace-code");
       dropPeace(34);
       window.setTimeout(() => {
         toast(total > 1 ? `Пасхалка №${total}: мир — главное правило переговоров 🕊️` : "Пасхалка найдена: мир — главное правило переговоров 🕊️");
       }, 300);
-      window.setTimeout(() => (triggered = false), 4000);
     };
+
+    const fireThanks = () => {
+      const total = countEgg("thanks-word");
+      dropPeace(26, HEART_GLYPHS);
+      window.setTimeout(() => toast(total > 1 ? `Пасхалка №${total}: и сайт говорит вам спасибо 💛` : "И сайт говорит вам спасибо 💛"), 300);
+    };
+
+    const fireSchool = () => {
+      countEgg("school84");
+      document.querySelectorAll(".brand__mark").forEach((el) => {
+        el.classList.remove("is-dancing");
+        void el.offsetWidth;
+        el.classList.add("is-dancing");
+        window.setTimeout(() => el.classList.remove("is-dancing"), 1200);
+      });
+      toast("Школа № 84 носит имя дважды Героя Советского Союза П. А. Покрышева ✈️");
+    };
+
     document.addEventListener("keydown", (event) => {
       const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
       progress = key === KONAMI[progress] ? progress + 1 : key === KONAMI[0] ? 1 : 0;
-      if (progress === KONAMI.length) fire();
-      if (key.length === 1 && /[а-яёa-z]/i.test(key)) {
-        typed = (typed + key).slice(-6);
-        if (typed.endsWith("мир") || typed.endsWith("peace")) fire();
+      if (progress === KONAMI.length) firePeace();
+      if (key.length === 1) {
+        typed = (typed + key).slice(-8);
+        const now = Date.now();
+        if (now - fired < 3000) return;
+        if (typed.endsWith("мир") || typed.endsWith("peace")) {
+          fired = now;
+          firePeace();
+        } else if (typed.endsWith("спасибо")) {
+          fired = now;
+          fireThanks();
+        } else if (typed.endsWith("84")) {
+          fired = now;
+          fireSchool();
+        }
       }
     });
   });
 
-  /* ---------- Три клика по логотипу: диалог двух пузырьков ---------- */
+  /* ---------- Логотип: три клика и долгое нажатие ---------- */
   safe(() => {
     const mark = document.querySelector(".site-header .brand__mark");
-    if (!mark) return;
+    const brandLink = document.querySelector(".site-header a.brand");
+    if (!mark || !brandLink) return;
+
     let clicks = 0;
-    let timer = 0;
+    let clickTimer = 0;
     mark.addEventListener("click", () => {
       clicks += 1;
-      window.clearTimeout(timer);
-      timer = window.setTimeout(() => (clicks = 0), 700);
+      window.clearTimeout(clickTimer);
+      clickTimer = window.setTimeout(() => (clicks = 0), 700);
       if (clicks >= 3) {
         clicks = 0;
         countEgg("logo-talk");
@@ -371,6 +532,93 @@
         toast("Два пузырька логотипа — два собеседника. Третий клик — ваша реплика 🫧");
       }
     });
+
+    let holdTimer = 0;
+    let suppressClick = false;
+    const startHold = (event) => {
+      window.clearTimeout(holdTimer);
+      holdTimer = window.setTimeout(() => {
+        suppressClick = true;
+        mark.classList.remove("is-pressing");
+        countEgg("logo-longpress");
+        dropPeace(10);
+        toast("Держать и слушать — уже медиация. Логотип это оценил 🫧");
+      }, 550);
+      mark.classList.add("is-pressing");
+      if (event.pointerType !== "mouse") event.preventDefault?.();
+    };
+    const cancelHold = () => {
+      window.clearTimeout(holdTimer);
+      mark.classList.remove("is-pressing");
+    };
+    mark.addEventListener("pointerdown", startHold);
+    ["pointerup", "pointercancel", "pointerleave"].forEach((type) =>
+      mark.addEventListener(type, cancelHold)
+    );
+    mark.addEventListener("contextmenu", (event) => event.preventDefault());
+    brandLink.addEventListener(
+      "click",
+      (event) => {
+        if (suppressClick) {
+          event.preventDefault();
+          event.stopPropagation();
+          suppressClick = false;
+        }
+      },
+      true
+    );
+  });
+
+  /* ---------- Мобильное: две стороны за столом (два пальца) ---------- */
+  safe(() => {
+    const card = document.querySelector(".appointment");
+    if (!card) return;
+    let last = 0;
+    card.addEventListener(
+      "touchstart",
+      (event) => {
+        if (event.touches.length < 2) return;
+        const now = Date.now();
+        if (now - last < 5000) return;
+        last = now;
+        countEgg("two-parties");
+        dropPeace(16);
+        toast("Две стороны за одним столом — так и начинаются переговоры 🤝");
+      },
+      { passive: true }
+    );
+  });
+
+  /* ---------- Мобильное: встряхни конфликт ---------- */
+  safe(() => {
+    if (!("DeviceMotionEvent" in window)) return;
+    let last = 0;
+    const onMotion = (event) => {
+      const g = event.accelerationIncludingGravity;
+      if (!g) return;
+      const magnitude = Math.hypot(g.x || 0, g.y || 0, g.z || 0);
+      if (magnitude > 25 && Date.now() - last > 6000) {
+        last = Date.now();
+        countEgg("shake-it");
+        dropPeace(30);
+        toast("Встряхнули конфликт — он разлетелся конфетти 🕊️");
+      }
+    };
+    if (typeof DeviceMotionEvent.requestPermission === "function") {
+      document.addEventListener(
+        "pointerdown",
+        () => {
+          DeviceMotionEvent.requestPermission()
+            .then((state) => {
+              if (state === "granted") window.addEventListener("devicemotion", onMotion);
+            })
+            .catch(() => {});
+        },
+        { once: true }
+      );
+    } else {
+      window.addEventListener("devicemotion", onMotion);
+    }
   });
 
   /* ---------- Кнопки-пасхалки на страницах-спутниках (например, 404) ---------- */
@@ -395,4 +643,7 @@
       });
     });
   });
+
+  /* ---------- Трекер секретов ---------- */
+  safe(renderTracker);
 })();

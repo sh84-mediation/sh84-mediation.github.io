@@ -2205,6 +2205,9 @@ html[data-a11y-scheme="yellow"] ::selection {
   .a11y-panel__close {
     min-height: 44px;
   }
+  .home-links {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 360px) {

@@ -2252,3 +2252,42 @@ html[data-a11y-scheme="yellow"] ::selection {
     line-height: 1.65;
   }
 }
+
+/* ---------- ПК, грамоты: без белых полей, картинка почти во всю страницу ---------- */
+@media (min-width: 921px) {
+  .page-achievements .lightbox {
+    padding: clamp(16px, 2.5vw, 32px);
+  }
+  .page-achievements .lightbox__figure {
+    width: auto;
+    max-width: calc(100vw - 200px);
+  }
+  .page-achievements .lightbox__image {
+    flex: 0 1 auto;
+    width: auto;
+    background: transparent;
+    max-height: calc(100vh - 88px);
+  }
+}
+
+/* ---------- ПК, галерея: подпись под фото ---------- */
+@media (min-width: 921px) {
+  .page-gallery .lightbox__figure {
+    flex-direction: column;
+    width: auto;
+    max-width: calc(100vw - 210px);
+    gap: 16px;
+  }
+  .page-gallery .lightbox__image {
+    flex: 0 1 auto;
+    width: auto;
+    max-width: 100%;
+    max-height: calc(100vh - 190px);
+  }
+  .page-gallery .lightbox__caption {
+    flex: none;
+    max-width: 74ch;
+    text-align: center;
+    font-size: 0.8125rem;
+  }
+}

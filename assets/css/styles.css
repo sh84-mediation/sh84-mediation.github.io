@@ -2291,3 +2291,19 @@ html[data-a11y-scheme="yellow"] ::selection {
     font-size: 0.8125rem;
   }
 }
+
+/* ---------- Выделение важного текста ---------- */
+.mark-accent {
+  padding: 0 3px;
+  color: var(--emerald-950);
+  font-weight: 800;
+  background: linear-gradient(180deg, rgba(169, 237, 207, 0) 50%, rgba(169, 237, 207, 0.7) 50%);
+  border-radius: 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.appointment__row dd {
+  color: var(--emerald-700);
+  font-weight: 800;
+  font-size: 1rem;
+}

@@ -1606,14 +1606,14 @@ html.lightbox-open {
 @media (max-width: 640px) {
   :root {
     --gutter: 18px;
-    --header-h: 132px;
+    --header-h: 72px;
   }
   .header__inner {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-rows: 72px auto;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-rows: 72px;
     height: auto;
-    gap: 0 10px;
+    gap: 0 8px;
   }
   .header__actions {
     display: contents;
@@ -1623,18 +1623,21 @@ html.lightbox-open {
     grid-row: 1;
   }
   .menu-toggle {
-    grid-column: 2;
+    grid-column: 3;
     grid-row: 1;
   }
   .a11y-toggle {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    width: 100%;
-    margin: 0 0 10px;
-    padding: 0 16px;
-    justify-content: flex-start;
-    text-align: left;
-    white-space: normal;
+    grid-column: 2;
+    grid-row: 1;
+    width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border-color: var(--line-strong);
+    border-radius: 12px;
+    justify-content: center;
+  }
+  .a11y-toggle__label {
+    display: none;
   }
   .brand__mark {
     width: 40px;

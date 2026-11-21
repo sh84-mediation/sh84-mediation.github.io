@@ -50,7 +50,12 @@
   const setPanel = (open, restoreFocus = false) => {
     panel.hidden = !open;
     toggle.setAttribute("aria-expanded", String(open));
-    if (!open && restoreFocus) toggle.focus({ preventScroll: true });
+    if (open) {
+      panel.scrollTop = 0;
+      panel.focus({ preventScroll: true });
+    } else if (restoreFocus) {
+      toggle.focus({ preventScroll: true });
+    }
   };
 
   toggle.addEventListener("click", () => setPanel(panel.hidden));

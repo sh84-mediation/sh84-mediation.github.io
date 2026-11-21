@@ -894,11 +894,25 @@ main {
   font-weight: 600;
   letter-spacing: 0.03em;
 }
-.doc-item__arrow {
-  width: 17px;
-  height: 17px;
+.doc-item__download {
+  display: grid;
   flex: none;
-  color: var(--emerald-500);
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  color: var(--emerald-700);
+  background: var(--emerald-50);
+  border-radius: 12px;
+  transition: color 0.2s, background-color 0.2s;
+}
+.doc-item__download:hover,
+.doc-item__download:focus-visible {
+  color: var(--white);
+  background: var(--emerald-700);
+}
+.doc-item__download .icon {
+  width: 18px;
+  height: 18px;
 }
 
 /* ---------- РџРѕСЂСЏРґРѕРє РѕР±СЂР°С‰РµРЅРёСЏ ---------- */
@@ -1460,6 +1474,15 @@ main {
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s;
 }
+.lightbox__close {
+  width: auto;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: var(--radius-pill);
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
 .lightbox__close:hover,
 .lightbox__nav:hover {
   background: rgba(255, 255, 255, 0.14);
@@ -1838,19 +1861,32 @@ html[data-a11y-font] dt {
 }
 
 .a11y-panel {
+  position: fixed;
+  top: var(--header-h);
+  right: 0;
+  left: 0;
+  z-index: 110;
+  max-height: calc(100vh - var(--header-h) - 14px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   color: var(--ink);
   background: var(--emerald-50);
   border-bottom: 1px solid var(--line);
-  box-shadow: inset 0 3px 0 var(--emerald-600), 0 18px 36px -30px rgba(4, 36, 29, 0.5);
+  box-shadow: inset 0 3px 0 var(--emerald-600), 0 24px 44px -24px rgba(4, 36, 29, 0.55);
   font-size: 0.9375rem;
 }
+@supports (height: 100dvh) {
+  .a11y-panel {
+    max-height: calc(100dvh - var(--header-h) - 14px);
+  }
+}
 .a11y-panel:not([hidden]) {
-  animation: a11y-panel-in 0.25s var(--ease);
+  animation: a11y-panel-in 0.3s var(--ease);
 }
 @keyframes a11y-panel-in {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-18px);
   }
 }
 .a11y-panel[hidden] {
@@ -1903,19 +1939,26 @@ html[data-a11y-font] dt {
   color: var(--emerald-900);
 }
 .a11y-panel__close {
-  display: grid;
-  width: 38px;
-  height: 38px;
-  padding: 0;
-  place-items: center;
-  color: var(--muted);
-  background: transparent;
-  border-radius: 50%;
-  cursor: pointer;
-}
-.a11y-panel__close:hover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 18px;
   color: var(--emerald-800);
-  background: var(--emerald-100);
+  background: var(--white);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+.a11y-panel__close:hover,
+.a11y-panel__close:focus-visible {
+  color: var(--white);
+  background: var(--emerald-700);
+  border-color: var(--emerald-700);
 }
 .a11y-panel__grid {
   display: grid;
@@ -2098,4 +2141,67 @@ html[data-a11y-scheme="yellow"] :focus-visible {
 html[data-a11y-scheme="yellow"] ::selection {
   color: #000000;
   background: #ffdf00;
+}
+
+
+/* ---------- Мобильная адаптация: дополнительные правила ---------- */
+@media (max-width: 640px) {
+  .hero__top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .hero h1 {
+    white-space: normal;
+    overflow-wrap: break-word;
+    text-wrap: balance;
+  }
+  .hero__actions {
+    width: 100%;
+  }
+  .hero__actions .button {
+    width: 100%;
+  }
+  .doc-item {
+    gap: 10px;
+  }
+  .doc-item__download {
+    width: 44px;
+    height: 44px;
+  }
+  .video-card {
+    padding: 18px 40px 20px 18px;
+  }
+  .video-card__icon {
+    width: 40px;
+    height: 40px;
+  }
+  .video-card__icon .icon {
+    width: 19px;
+    height: 19px;
+  }
+  .lightbox__close {
+    top: 12px;
+    right: 12px;
+  }
+  .footer__contacts a {
+    overflow-wrap: anywhere;
+  }
+  .a11y-panel__head-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .a11y-panel__close {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 360px) {
+  .team-grid,
+  .home-links {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hero h1 {
+    font-size: 1.25rem;
+  }
 }

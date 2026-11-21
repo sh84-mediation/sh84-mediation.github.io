@@ -30,15 +30,13 @@
     <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12Z" /><circle cx="12" cy="12" r="2.5" /></symbol>
   </svg>
 
-  <section class="a11y-panel" id="a11y-panel" aria-labelledby="a11y-panel-title" hidden>
+  <section class="a11y-panel" id="a11y-panel" aria-labelledby="a11y-panel-title" tabindex="-1" hidden>
     <div class="container a11y-panel__inner">
       <div class="a11y-panel__head">
         <h2 class="a11y-panel__title" id="a11y-panel-title"><svg class="icon" aria-hidden="true"><use href="#icon-eye"></use></svg>Версия для слабовидящих</h2>
         <div class="a11y-panel__head-actions">
           <button class="a11y-panel__reset" type="button" data-a11y-reset>Обычная версия</button>
-          <button class="a11y-panel__close" type="button" aria-label="Закрыть настройки">
-            <svg class="icon" aria-hidden="true"><use href="#icon-close"></use></svg>
-          </button>
+          <button class="a11y-panel__close" type="button" aria-label="Закрыть настройки">Закрыть</button>
         </div>
       </div>
       <div class="a11y-panel__grid">

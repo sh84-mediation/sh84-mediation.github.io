@@ -36,15 +36,13 @@
     <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12Z" /><circle cx="12" cy="12" r="2.5" /></symbol>
   </svg>
 
-  <section class="a11y-panel" id="a11y-panel" aria-labelledby="a11y-panel-title" hidden>
+  <section class="a11y-panel" id="a11y-panel" aria-labelledby="a11y-panel-title" tabindex="-1" hidden>
     <div class="container a11y-panel__inner">
       <div class="a11y-panel__head">
         <h2 class="a11y-panel__title" id="a11y-panel-title"><svg class="icon" aria-hidden="true"><use href="#icon-eye"></use></svg>Версия для слабовидящих</h2>
         <div class="a11y-panel__head-actions">
           <button class="a11y-panel__reset" type="button" data-a11y-reset>Обычная версия</button>
-          <button class="a11y-panel__close" type="button" aria-label="Закрыть настройки">
-            <svg class="icon" aria-hidden="true"><use href="#icon-close"></use></svg>
-          </button>
+          <button class="a11y-panel__close" type="button" aria-label="Закрыть настройки">Закрыть</button>
         </div>
       </div>
       <div class="a11y-panel__grid">
@@ -267,7 +265,7 @@
                   <a href="assets/docs/prikaz-23-01-2023.pdf" target="_blank" rel="noopener">Приказ № 71/1 от 01.09.2022 «О работе службы медиации»</a>
                   <span class="doc-item__meta">PDF · 0,2 МБ</span>
                 </span>
-                <svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg>
+                <a class="doc-item__download" href="assets/docs/prikaz-23-01-2023.pdf" download aria-label="Скачать документ"><svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg></a>
               </li>
               <li class="doc-item">
                 <span class="doc-item__icon" aria-hidden="true"><svg class="icon"><use href="#icon-doc"></use></svg></span>
@@ -275,7 +273,7 @@
                   <a href="assets/docs/polozhenie_o_shsm_290420.pdf" target="_blank" rel="noopener">Положение о школьной службе медиации</a>
                   <span class="doc-item__meta">PDF · 0,5 МБ</span>
                 </span>
-                <svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg>
+                <a class="doc-item__download" href="assets/docs/polozhenie_o_shsm_290420.pdf" download aria-label="Скачать документ"><svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg></a>
               </li>
               <li class="doc-item">
                 <span class="doc-item__icon" aria-hidden="true"><svg class="icon"><use href="#icon-doc"></use></svg></span>
@@ -283,7 +281,7 @@
                   <a href="assets/docs/26042023plan_dlja_sajta.pdf" target="_blank" rel="noopener">План работы Службы школьной медиации на 2022–2023 учебный год</a>
                   <span class="doc-item__meta">PDF · 0,5 МБ</span>
                 </span>
-                <svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg>
+                <a class="doc-item__download" href="assets/docs/26042023plan_dlja_sajta.pdf" download aria-label="Скачать документ"><svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg></a>
               </li>
               <li class="doc-item">
                 <span class="doc-item__icon" aria-hidden="true"><svg class="icon"><use href="#icon-doc"></use></svg></span>
@@ -291,7 +289,7 @@
                   <a href="assets/docs/26042023programma_dlja_sajta.pdf" target="_blank" rel="noopener">Программа школьной Службы медиации на 2022–2025 гг.</a>
                   <span class="doc-item__meta">PDF · 0,6 МБ</span>
                 </span>
-                <svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg>
+                <a class="doc-item__download" href="assets/docs/26042023programma_dlja_sajta.pdf" download aria-label="Скачать документ"><svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg></a>
               </li>
               <li class="doc-item">
                 <span class="doc-item__icon" aria-hidden="true"><svg class="icon"><use href="#icon-doc"></use></svg></span>
@@ -299,7 +297,7 @@
                   <a href="assets/docs/kodeks_povedenija_shkolnogo_mediatora.pdf" target="_blank" rel="noopener">Кодекс поведения школьного медиатора</a>
                   <span class="doc-item__meta">PDF · 0,1 МБ</span>
                 </span>
-                <svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg>
+                <a class="doc-item__download" href="assets/docs/kodeks_povedenija_shkolnogo_mediatora.pdf" download aria-label="Скачать документ"><svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg></a>
               </li>
             </ul>
           </div>
@@ -313,7 +311,7 @@
                   <a href="assets/docs/mdiacija22042020.pdf" target="_blank" rel="noopener">Общие понятия по вопросу медиации</a>
                   <span class="doc-item__meta">PDF · 0,2 МБ</span>
                 </span>
-                <svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg>
+                <a class="doc-item__download" href="assets/docs/mdiacija22042020.pdf" download aria-label="Скачать документ"><svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg></a>
               </li>
               <li class="doc-item">
                 <span class="doc-item__icon" aria-hidden="true"><svg class="icon"><use href="#icon-doc"></use></svg></span>
@@ -321,7 +319,7 @@
                   <a href="assets/docs/normativnaja_baza290420.pdf" target="_blank" rel="noopener">Правовая основа организации служб школьной медиации</a>
                   <span class="doc-item__meta">PDF · 0,1 МБ</span>
                 </span>
-                <svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg>
+                <a class="doc-item__download" href="assets/docs/normativnaja_baza290420.pdf" download aria-label="Скачать документ"><svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg></a>
               </li>
               <li class="doc-item">
                 <span class="doc-item__icon" aria-hidden="true"><svg class="icon"><use href="#icon-doc"></use></svg></span>
@@ -329,7 +327,7 @@
                   <a href="assets/docs/instruktivnoe_pismo_29042020.pdf" target="_blank" rel="noopener">Инструктивно-методическое письмо Комитета по образованию «О совершенствовании деятельности школьных служб медиации»</a>
                   <span class="doc-item__meta">PDF · 0,9 МБ</span>
                 </span>
-                <svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg>
+                <a class="doc-item__download" href="assets/docs/instruktivnoe_pismo_29042020.pdf" download aria-label="Скачать документ"><svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg></a>
               </li>
               <li class="doc-item">
                 <span class="doc-item__icon" aria-hidden="true"><svg class="icon"><use href="#icon-doc"></use></svg></span>
@@ -337,7 +335,7 @@
                   <a href="assets/docs/sozdanie_sovremennoj_shkolnoj_sluzhby_mediacii.pdf" target="_blank" rel="noopener">Родительское собрание «Создание современной школьной службы медиации»</a>
                   <span class="doc-item__meta">PDF · 0,8 МБ</span>
                 </span>
-                <svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg>
+                <a class="doc-item__download" href="assets/docs/sozdanie_sovremennoj_shkolnoj_sluzhby_mediacii.pdf" download aria-label="Скачать документ"><svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg></a>
               </li>
               <li class="doc-item">
                 <span class="doc-item__icon" aria-hidden="true"><svg class="icon"><use href="#icon-doc"></use></svg></span>
@@ -345,7 +343,7 @@
                   <a href="assets/docs/programma_obuchenija290420.pdf" target="_blank" rel="noopener">Программа обучения учащихся методу школьной медиации</a>
                   <span class="doc-item__meta">PDF · 0,5 МБ</span>
                 </span>
-                <svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg>
+                <a class="doc-item__download" href="assets/docs/programma_obuchenija290420.pdf" download aria-label="Скачать документ"><svg class="icon doc-item__arrow" aria-hidden="true"><use href="#icon-download"></use></svg></a>
               </li>
             </ul>
           </div>

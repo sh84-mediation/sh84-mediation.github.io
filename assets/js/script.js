@@ -83,9 +83,7 @@
   lightbox.className = "lightbox";
   lightbox.setAttribute("aria-label", "Просмотр изображения");
   lightbox.innerHTML = `
-    <button class="lightbox__close" type="button" data-lightbox-close aria-label="Закрыть просмотр">
-      <svg class="icon" aria-hidden="true"><use href="#icon-close"></use></svg>
-    </button>
+    <button class="lightbox__close" type="button" data-lightbox-close>Закрыть</button>
     <button class="lightbox__nav lightbox__nav--prev" type="button" data-lightbox-prev aria-label="Предыдущее изображение">
       <svg class="icon" aria-hidden="true"><use href="#icon-chevron"></use></svg>
     </button>

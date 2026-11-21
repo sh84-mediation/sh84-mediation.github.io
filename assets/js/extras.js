@@ -1,8 +1,8 @@
 /* =========================================================
    Дизайн-детали и пасхалки школьной службы медиации
    Ничего критичного: если что-то не сработало — сайт живёт как жил.
-   Настольные: тилт карточек, «эхо диалога», параллакс, часы МСК.
-   Телефонные: встряска, два пальца, долгое нажатие на логотип.
+   У ПК и у телефона — свои наборы секретов (трекер в подвале).
+   Подсказки спрятаны по всему сайту — присмотритесь.
    ========================================================= */
 (() => {
   "use strict";
@@ -15,18 +15,17 @@
   const finePointer = !window.matchMedia("(pointer: coarse)").matches;
   const EGGS_KEY = "sh84-eggs-found";
 
-  /* Каталог секретов для трекера в подвале */
+  /* Каталог секретов: у ПК и у телефона — свои наборы */
   const EGG_LIST = {
-    "peace-code": "код мира (↑↑↓↓←→←→BA или «мир»)",
-    "logo-talk": "три клика по логотипу",
-    "logo-longpress": "долгое нажатие на логотип",
-    "thanks-word": "волшебное слово",
-    "school84": "число школы",
-    "shake-it": "встряска конфликта",
-    "two-parties": "две стороны за столом",
-    "motto-mix": "другая формулировка",
+    "peace-code": { where: "pc", label: "код мира (↑↑↓↓←→←→BA или слово «мир»)" },
+    "logo-talk": { where: "pc", label: "три клика по логотипу" },
+    "logo-longpress": { where: "both", label: "долгое нажатие на логотип" },
+    "thanks-word": { where: "pc", label: "вежливое слово с клавиатуры" },
+    "school84": { where: "pc", label: "число школы, набранное на клавиатуре" },
+    "shake-it": { where: "phone", label: "встряска конфликта" },
+    "two-parties": { where: "phone", label: "две стороны за одним столом" },
+    "motto-mix": { where: "both", label: "другая формулировка фразы дня" },
   };
-  const EGG_TOTAL = Object.keys(EGG_LIST).length;
 
   const safe = (fn) => {
     try {
@@ -67,11 +66,22 @@
     }
   };
 
+  /* Телефон или ПК: наборы секретов разные */
+  const isTouchDevice = () =>
+    window.matchMedia("(pointer: coarse)").matches ||
+    (navigator.maxTouchPoints || 0) > 0 ||
+    "ontouchstart" in window;
+
+  const eggsForDevice = (touch) =>
+    Object.entries(EGG_LIST).filter(([, meta]) => (touch ? meta.where !== "pc" : meta.where !== "phone"));
+
   let trackerNode = null;
   const renderTracker = () => {
     const legal = document.querySelector(".footer__legal");
     if (!legal) return;
-    const found = readEggs().filter((name) => EGG_LIST[name]);
+    const touch = isTouchDevice();
+    const available = eggsForDevice(touch);
+    const found = available.filter(([name]) => readEggs().includes(name));
     if (!found.length) return;
     if (!trackerNode) {
       trackerNode = document.createElement("p");
@@ -80,15 +90,18 @@
     }
     trackerNode.textContent = "";
     const icon = document.createElement("span");
-    icon.textContent = "🔎";
+    icon.textContent = touch ? "📱" : "🖥️";
     icon.setAttribute("aria-hidden", "true");
     trackerNode.appendChild(icon);
     trackerNode.appendChild(
-      document.createTextNode(`Найдено секретов: ${found.length} из ${EGG_TOTAL}`)
+      document.createTextNode(`Секреты ${touch ? "телефона" : "ПК"}: ${found.length} из ${available.length}`)
     );
+    const rest = available.length - found.length;
     trackerNode.title = `Открыто: ${found
-      .map((name) => EGG_LIST[name])
-      .join(" · ")}. Сайт службы — тоже место для переговоров.`;
+      .map(([name]) => EGG_LIST[name].label)
+      .join(" · ")}. Ещё ${rest} ждёт своего исследователя.${
+      touch ? " А у ПК — свой набор секретов." : " А у телефона — свой набор секретов."
+    }`;
   };
 
   const countEgg = (name) => {
@@ -135,6 +148,133 @@
       };
     }
   };
+
+  /* ---------- Спецэффекты: у каждой пасхалки — свой сценарий ---------- */
+  const rand = (min, max) => min + Math.random() * (max - min);
+
+  const spawnFx = (kind, anchor) => {
+    if (reduced) return;
+    safe(() => {
+      const layer = document.createElement("div");
+      layer.className = `egg-fx egg-fx--${kind}`;
+      layer.setAttribute("aria-hidden", "true");
+      document.body.appendChild(layer);
+      let ttl = 2200;
+      const place = (tag, cls, css, text) => {
+        const el = document.createElement(tag);
+        if (cls) el.className = cls;
+        for (const [key, value] of Object.entries(css)) {
+          if (key.startsWith("--")) el.style.setProperty(key, value);
+          else el.style[key] = value;
+        }
+        if (text) el.textContent = text;
+        layer.appendChild(el);
+        return el;
+      };
+      let center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+      if (anchor) {
+        const r = anchor.getBoundingClientRect();
+        center = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+      }
+
+      if (kind === "doves") {
+        place("i", "egg-fx__glow", {});
+        for (let i = 0; i < 6; i += 1) {
+          const toRight = i % 2 === 0;
+          place("span", "", {
+            left: toRight ? "-10%" : "110%",
+            top: `${rand(18, 74)}%`,
+            fontSize: `${rand(22, 36)}px`,
+            "--fly": toRight ? "124vw" : "-124vw",
+            "--dur": `${rand(1.5, 2.4)}s`,
+            "--delay": `${rand(0, 0.5)}s`,
+          }, PEACE_GLYPHS[0]);
+        }
+        ttl = 3100;
+      } else if (kind === "hearts") {
+        for (let i = 0; i < 16; i += 1) {
+          place("span", "", {
+            left: `${center.x}px`,
+            top: `${center.y}px`,
+            fontSize: `${rand(16, 30)}px`,
+            "--dx": `${rand(-240, 240)}px`,
+            "--dy": `${rand(-340, -70)}px`,
+            "--dur": `${rand(1.1, 1.6)}s`,
+            "--delay": `${rand(0, 0.25)}s`,
+          }, HEART_GLYPHS[i % HEART_GLYPHS.length]);
+        }
+        ttl = 2000;
+      } else if (kind === "stamp84") {
+        const COLORS = ["#1e9a78", "#a9edcf", "#f2c94c", "#0b4a3a", "#fdf6e3"];
+        for (let i = 0; i < 24; i += 1) {
+          place("i", "", {
+            left: `${rand(2, 98)}%`,
+            "--w": `${rand(6, 11)}px`,
+            "--h": `${rand(10, 17)}px`,
+            "--c": COLORS[i % COLORS.length],
+            "--spin": `${rand(-420, 420)}deg`,
+            "--dur": `${rand(1.3, 2.1)}s`,
+            "--delay": `${rand(0, 0.3)}s`,
+          });
+        }
+        place("b", "egg-fx__stamp", {}, "84");
+        ttl = 2100;
+      } else if (kind === "bubbles") {
+        for (let i = 0; i < 9; i += 1) {
+          place("span", "", {
+            left: `${center.x + rand(-36, 36)}px`,
+            top: `${center.y + rand(-14, 14)}px`,
+            fontSize: `${rand(12, 26)}px`,
+            "--sway": `${rand(-46, 46)}px`,
+            "--rise": `${rand(22, 38)}vh`,
+            "--dur": `${rand(1.4, 2.2)}s`,
+            "--delay": `${rand(0, 0.4)}s`,
+          }, "🫧");
+        }
+        ttl = 2700;
+      } else if (kind === "rings") {
+        for (let i = 0; i < 3; i += 1) {
+          place("i", "", {
+            left: `${center.x}px`,
+            top: `${center.y}px`,
+            "--delay": `${i * 0.16}s`,
+          });
+        }
+        if (anchor) {
+          anchor.classList.remove("is-egg-pulse");
+          void anchor.offsetWidth;
+          anchor.classList.add("is-egg-pulse");
+          window.setTimeout(() => anchor.classList.remove("is-egg-pulse"), 1100);
+        }
+        ttl = 1500;
+      } else if (kind === "wobble") {
+        ["main", ".site-footer"].forEach((sel) => {
+          const el = document.querySelector(sel);
+          if (!el) return;
+          el.classList.remove("is-egg-wobble");
+          void el.offsetWidth;
+          el.classList.add("is-egg-wobble");
+          window.setTimeout(() => el.classList.remove("is-egg-wobble"), 800);
+        });
+        ttl = 900;
+      } else if (kind === "sparks") {
+        for (let i = 0; i < 8; i += 1) {
+          place("span", "", {
+            left: `${center.x}px`,
+            top: `${center.y}px`,
+            fontSize: `${rand(12, 20)}px`,
+            "--dx": `${rand(-110, 110)}px`,
+            "--dy": `${rand(-110, 60)}px`,
+            "--dur": "0.9s",
+            "--delay": `${rand(0, 0.2)}s`,
+          }, "✨");
+        }
+        ttl = 1300;
+      }
+      window.setTimeout(() => layer.remove(), ttl);
+    });
+  };
+  window.__sh84Fx = spawnFx;
 
   /* ---------- Полоса прогресса чтения под шапкой ---------- */
   safe(() => {
@@ -295,32 +435,6 @@
     });
   });
 
-  /* ---------- Часы приёма: московское время в подвале ---------- */
-  safe(() => {
-    const legal = document.querySelector(".footer__legal");
-    if (!legal) return;
-    const clock = document.createElement("p");
-    clock.className = "footer__clock";
-    clock.title = "Служба живёт по московскому времени";
-    const dot = document.createElement("span");
-    dot.className = "footer__clock-dot";
-    dot.setAttribute("aria-hidden", "true");
-    clock.appendChild(dot);
-    const text = document.createElement("span");
-    clock.appendChild(text);
-    const tick = () => {
-      const time = new Intl.DateTimeFormat("ru-RU", {
-        timeZone: "Europe/Moscow",
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(new Date());
-      text.textContent = `МСК · ${time}`;
-    };
-    tick();
-    window.setInterval(tick, 30000);
-    legal.appendChild(clock);
-  });
-
   /* ---------- «Сейчас приём»: живой индикатор расписания (МСК) ---------- */
   safe(() => {
     const card = document.querySelector(".appointment");
@@ -428,6 +542,7 @@
       text.textContent = MOTTO[current];
       if (mixes === 1) {
         countEgg("motto-mix");
+        spawnFx("sparks", shuffle);
         toast("Формулировки — тоже переговоры. Ещё разок? ↻");
       }
     };
@@ -468,7 +583,7 @@
 
     const firePeace = () => {
       const total = countEgg("peace-code");
-      dropPeace(34);
+      spawnFx("doves");
       window.setTimeout(() => {
         toast(total > 1 ? `Пасхалка №${total}: мир — главное правило переговоров 🕊️` : "Пасхалка найдена: мир — главное правило переговоров 🕊️");
       }, 300);
@@ -476,12 +591,13 @@
 
     const fireThanks = () => {
       const total = countEgg("thanks-word");
-      dropPeace(26, HEART_GLYPHS);
+      spawnFx("hearts");
       window.setTimeout(() => toast(total > 1 ? `Пасхалка №${total}: и сайт говорит вам спасибо 💛` : "И сайт говорит вам спасибо 💛"), 300);
     };
 
     const fireSchool = () => {
       countEgg("school84");
+      spawnFx("stamp84");
       document.querySelectorAll(".brand__mark").forEach((el) => {
         el.classList.remove("is-dancing");
         void el.offsetWidth;
@@ -528,7 +644,7 @@
       if (clicks >= 3) {
         clicks = 0;
         countEgg("logo-talk");
-        dropPeace(12);
+        spawnFx("bubbles", mark);
         toast("Два пузырька логотипа — два собеседника. Третий клик — ваша реплика 🫧");
       }
     });
@@ -541,7 +657,7 @@
         suppressClick = true;
         mark.classList.remove("is-pressing");
         countEgg("logo-longpress");
-        dropPeace(10);
+        spawnFx("bubbles", mark);
         toast("Держать и слушать — уже медиация. Логотип это оценил 🫧");
       }, 550);
       mark.classList.add("is-pressing");
@@ -582,7 +698,7 @@
         if (now - last < 5000) return;
         last = now;
         countEgg("two-parties");
-        dropPeace(16);
+        spawnFx("rings", card);
         toast("Две стороны за одним столом — так и начинаются переговоры 🤝");
       },
       { passive: true }
@@ -600,7 +716,7 @@
       if (magnitude > 25 && Date.now() - last > 6000) {
         last = Date.now();
         countEgg("shake-it");
-        dropPeace(30);
+        spawnFx("wobble");
         toast("Встряхнули конфликт — он разлетелся конфетти 🕊️");
       }
     };

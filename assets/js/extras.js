@@ -416,4 +416,114 @@
       { passive: true }
     );
   });
+
+  /* ---------- Встряска телефона: конфетти-взрыв без текста ---------- */
+  const CONFETTI_COLORS = ["#0d6b4f", "#3ecf95", "#a9edcf", "#f2c14e", "#1d8f6a", "#eafff4"];
+  const spawnConfetti = () => {
+    if (reduced) return;
+    safe(() => {
+      const layer = document.createElement("div");
+      layer.className = "confetti-layer";
+      layer.setAttribute("aria-hidden", "true");
+      document.body.appendChild(layer);
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight * 0.55;
+      const power = Math.min(window.innerWidth, window.innerHeight) * 0.024 + 5;
+      const pieces = [];
+      for (let i = 0; i < 84; i += 1) {
+        const piece = document.createElement("i");
+        const size = 7 + Math.random() * 8;
+        piece.style.width = `${size.toFixed(1)}px`;
+        piece.style.height = `${(size * (0.5 + Math.random() * 0.9)).toFixed(1)}px`;
+        piece.style.background = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
+        if (Math.random() > 0.7) piece.style.borderRadius = "50%";
+        layer.appendChild(piece);
+        const angle = Math.random() * Math.PI * 2;
+        const speed = power * (0.55 + Math.random() * 0.9);
+        pieces.push({
+          node: piece,
+          x: cx + (Math.random() - 0.5) * 24,
+          y: cy + (Math.random() - 0.5) * 24,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - power * (0.6 + Math.random() * 0.8),
+          rot: Math.random() * 360,
+          spin: (Math.random() - 0.5) * 26,
+          life: 0,
+          ttl: 85 + Math.random() * 45,
+        });
+      }
+      const step = () => {
+        let alive = 0;
+        pieces.forEach((p) => {
+          p.life += 1;
+          if (p.life >= p.ttl || p.y > window.innerHeight + 40) return;
+          alive += 1;
+          p.vy += 0.5; /* гравитация */
+          p.vx *= 0.985; /* сопротивление воздуха */
+          p.vy *= 0.985;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.spin;
+          const k = p.life / p.ttl;
+          p.node.style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px) rotate(${p.rot.toFixed(0)}deg)`;
+          p.node.style.opacity = String(k > 0.6 ? Math.max((1 - k) / 0.4, 0) : 1);
+        });
+        if (alive) {
+          window.requestAnimationFrame(step);
+        } else {
+          layer.remove();
+        }
+      };
+      window.requestAnimationFrame(step);
+      window.setTimeout(() => layer.remove(), 5000); /* страховка */
+    });
+  };
+  safe(() => {
+    let armed = false;
+    const listen = () => {
+      let lastX = null;
+      let lastY = null;
+      let lastZ = null;
+      let energy = 0;
+      let lastFire = 0;
+      window.addEventListener(
+        "devicemotion",
+        (event) => {
+          const acc = event.accelerationIncludingGravity;
+          if (!acc || acc.x == null || acc.y == null || acc.z == null) return;
+          if (lastX !== null) {
+            energy += Math.abs(acc.x - lastX) + Math.abs(acc.y - lastY) + Math.abs(acc.z - lastZ);
+          }
+          lastX = acc.x;
+          lastY = acc.y;
+          lastZ = acc.z;
+          const now = performance.now();
+          if (energy > 26 && now - lastFire > 2600) {
+            energy = 0;
+            lastFire = now;
+            spawnConfetti();
+          }
+          energy *= 0.82; /* без накопления от мелкой тряски */
+        },
+        { passive: true }
+      );
+    };
+    const arm = () => {
+      if (armed) return;
+      armed = true;
+      if (typeof window.DeviceMotionEvent === "undefined") return;
+      if (typeof window.DeviceMotionEvent.requestPermission === "function") {
+        /* iOS: разрешение запрашивается только по касанию пользователя */
+        window.DeviceMotionEvent.requestPermission()
+          .then((state) => {
+            if (state === "granted") listen();
+          })
+          .catch(() => {});
+      } else {
+        listen();
+      }
+    };
+    window.addEventListener("touchend", arm, { once: true, passive: true });
+    window.addEventListener("click", arm, { once: true });
+  });
 })();

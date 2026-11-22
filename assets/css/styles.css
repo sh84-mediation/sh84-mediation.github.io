@@ -1669,13 +1669,16 @@ html.lightbox-open {
     margin-bottom: 14px;
     border-radius: 26px;
   }
-  /* Секции — отдельные карточки с видимым тёмным зазором между ними */
+  /* Секции — отдельные карточки с видимым зазором между ними */
   .about,
   .documents,
-  main > .section:not(:first-child):not(.about):not(.documents),
-  main > section:last-child {
+  main > .section:not(:first-child):not(:last-child):not(.about):not(.documents) {
     margin-bottom: 14px;
     border-radius: 26px;
+  }
+  /* Перед подвалом полосы быть не должно: белая секция уходит прямо в подвал */
+  main > section:last-child {
+    margin-bottom: 0;
   }
   .section-head h1,
   .section-head h2 {
@@ -3046,6 +3049,21 @@ html[data-a11y-scheme="yellow"] .shimmer {
 @keyframes egg-shock {
   0% { transform: scale(0.25); opacity: 0.95; }
   100% { transform: scale(30); opacity: 0; }
+}
+/* ---------- Конфетти при встряске телефона ---------- */
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 186;
+  overflow: hidden;
+  pointer-events: none;
+}
+.confetti-layer i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 2px;
+  will-change: transform, opacity;
 }
 .is-egg-pulse {
   animation: egg-card-pulse 1s ease-out;

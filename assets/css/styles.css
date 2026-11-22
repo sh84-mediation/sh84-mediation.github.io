@@ -1605,6 +1605,24 @@ html.lightbox-open {
   :root {
     --gutter: 18px;
     --header-h: 72px;
+    /* Боковой отступ плавающих карточек (шапка, секции, подвал) */
+    --edge: 12px;
+  }
+  body {
+    padding-top: 8px;
+  }
+  /* Шапка — плавающая карточка со скруглением и отступами, как секции на ПК */
+  .site-header {
+    top: 8px;
+    width: calc(100% - var(--edge) * 2);
+    margin-inline: auto;
+    overflow: hidden;
+    border: 1px solid rgba(224, 233, 228, 0.9);
+    border-radius: 22px;
+    box-shadow: 0 10px 30px -22px rgba(4, 36, 29, 0.45);
+  }
+  .scroll-progress {
+    bottom: 0;
   }
   .header__inner {
     display: grid;
@@ -1637,6 +1655,13 @@ html.lightbox-open {
   .a11y-toggle__label {
     display: none;
   }
+  /* Панель версии для слабовидящих — карточка под плавающей шапкой */
+  .a11y-panel {
+    top: calc(var(--header-h) + 10px);
+    right: var(--edge);
+    left: var(--edge);
+    border-radius: 22px;
+  }
   .brand__mark {
     width: 40px;
     height: 40px;
@@ -1656,6 +1681,8 @@ html.lightbox-open {
   }
   .hero {
     padding-top: 22px;
+    margin-inline: var(--edge);
+    border-radius: 26px;
   }
   .hero h1 {
     font-size: clamp(1.6rem, 7.8vw, 2rem);
@@ -1668,19 +1695,32 @@ html.lightbox-open {
   }
   .section {
     padding: 28px 0 30px;
+    margin-inline: var(--edge);
     margin-bottom: 24px;
     border-radius: 26px;
   }
-  /* Секции — отдельные карточки с видимым зазором между ними */
+  /* Секции — отдельные плавающие карточки с видимым зазором между ними */
+  main {
+    background: var(--paper);
+    padding-top: 8px;
+  }
   .about,
   .documents,
   main > .section:not(:first-child):not(:last-child):not(.about):not(.documents) {
     margin-bottom: 24px;
     border-radius: 26px;
   }
-  /* Перед подвалом полосы быть не должно: белая секция уходит прямо в подвал */
+  /* Последняя секция — тоже плавающая карточка, подвал отделён таким же зазором */
   main > section:last-child {
-    margin-bottom: 0;
+    margin-bottom: 24px;
+    margin-inline: var(--edge);
+    padding-bottom: 30px;
+    border-radius: 26px;
+  }
+  /* Страница 404 — тёмная карточка, как все секции */
+  main.p404 {
+    margin: 0 var(--edge) 24px;
+    border-radius: 26px;
   }
   .section-head h1,
   .section-head h2 {
@@ -1770,8 +1810,8 @@ html.lightbox-open {
     grid-template-columns: minmax(0, 1fr);
   }
   .site-footer {
-    margin-top: 0;
-    border-radius: 26px 26px 0 0;
+    margin: 0 var(--edge) var(--edge);
+    border-radius: 26px;
     padding-top: 44px;
   }
   .footer__top {

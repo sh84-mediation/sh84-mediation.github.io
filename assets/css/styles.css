@@ -1369,7 +1369,7 @@ main {
   align-items: flex-start;
   gap: 8px;
   margin: 0 0 7px;
-  color: #cfe3da;
+  color: #8fb7a8;
   font-size: 0.71875rem;
   line-height: 1.55;
   transition: color 0.2s;
@@ -1398,8 +1398,8 @@ main {
   margin: 0;
 }
 .footer__legal a {
-  color: #cfe3da;
-  border-bottom: 1px solid rgba(207, 227, 218, 0.4);
+  color: #8fb7a8;
+  border-bottom: 1px solid rgba(143, 183, 168, 0.4);
   transition: color 0.2s, border-color 0.2s;
 }
 .footer__legal a:hover {
@@ -1649,6 +1649,10 @@ html.lightbox-open {
     letter-spacing: 0;
     line-height: 1.25;
     white-space: normal;
+  }
+  /* на узких экранах название школы занимает ровно две строки */
+  .footer__school {
+    max-width: none;
   }
   .hero {
     padding-top: 22px;

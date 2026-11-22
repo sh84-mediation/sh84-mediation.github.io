@@ -638,6 +638,7 @@ img {
 .documents {
   position: relative;
   z-index: 2;
+  background: var(--cream);
   border-radius: 48px 48px 0 0;
   margin-bottom: -48px;
   padding-bottom: calc(clamp(36px, 4.5vw, 60px) + 48px);
@@ -810,9 +811,6 @@ main {
 }
 
 /* ---------- Р”РѕРєСѓРјРµРЅС‚С‹ ---------- */
-.documents {
-  background: var(--cream);
-}
 .documents__columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2996,6 +2994,11 @@ html[data-a11y-scheme="yellow"] .shimmer {
   }
   .egg-spot--pc {
     display: none;
+  }
+  /* на сенсорных экранах метка должна попадать под палец */
+  .egg-spot__btn {
+    width: 44px;
+    height: 44px;
   }
 }
 

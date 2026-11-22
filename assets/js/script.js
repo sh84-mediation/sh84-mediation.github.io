@@ -49,6 +49,7 @@
   mobileLinks.forEach((link) => link.addEventListener("click", () => setMenu(false)));
   brand?.addEventListener("click", () => setMenu(false));
 
+  const a11yButton = document.querySelector(".site-header .a11y-toggle");
   document.addEventListener("keydown", (event) => {
     if (!menuOpen) return;
     if (event.key === "Escape") {
@@ -58,7 +59,7 @@
     }
     if (event.key !== "Tab") return;
 
-    const focusable = [brand, menuToggle, ...mobileLinks].filter(Boolean);
+    const focusable = [brand, a11yButton, menuToggle, ...mobileLinks].filter(Boolean);
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
 

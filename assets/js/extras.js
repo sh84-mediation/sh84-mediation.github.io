@@ -73,6 +73,30 @@
     });
   };
 
+  /* ---------- Полноэкранная волна (две стороны за столом) ---------- */
+  const spawnWave = (anchor) => {
+    if (reduced) return;
+    safe(() => {
+      const layer = document.createElement("div");
+      layer.className = "egg-fx egg-fx--wave";
+      layer.setAttribute("aria-hidden", "true");
+      let center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+      if (anchor) {
+        const rect = anchor.getBoundingClientRect();
+        center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      }
+      layer.style.setProperty("--fx-x", `${((center.x / window.innerWidth) * 100).toFixed(1)}%`);
+      layer.style.setProperty("--fx-y", `${((center.y / window.innerHeight) * 100).toFixed(1)}%`);
+      const shock = document.createElement("i");
+      shock.className = "egg-fx__shock";
+      shock.style.left = `${center.x}px`;
+      shock.style.top = `${center.y}px`;
+      layer.appendChild(shock);
+      document.body.appendChild(layer);
+      window.setTimeout(() => layer.remove(), 1500);
+    });
+  };
+
   /* ---------- «Падающий код зелёных»: матрица из зелёных символов ---------- */
   const MATRIX_GLYPHS = "01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンМИР".split("");
   const spawnMatrix = () => {
@@ -93,28 +117,30 @@
         return;
       }
       ctx.scale(dpr, dpr);
-      const size = 16;
-      const columns = Math.max(Math.ceil(width / (size * 0.9)), 8);
+      const size = 26;
+      const columns = Math.max(Math.ceil(width / (size * 0.95)), 8);
       const drops = Array.from({ length: columns }, () => ({
         row: Math.random() * -50,
-        speed: 0.28 + Math.random() * 0.55,
+        speed: 0.3 + Math.random() * 0.6,
       }));
-      const LIFE = 3800;
+      const LIFE = 4200;
       const started = performance.now();
       const paint = (now) => {
         const age = now - started;
         ctx.clearRect(0, 0, width, height);
-        ctx.font = `${size}px ui-monospace, "Cascadia Mono", monospace`;
+        ctx.font = `bold ${size}px ui-monospace, "Cascadia Mono", monospace`;
+        ctx.shadowColor = "rgba(120, 255, 170, 0.9)";
+        ctx.shadowBlur = 10;
         drops.forEach((drop, i) => {
-          const x = i * size * 0.9 + 4;
+          const x = i * size * 0.95 + 4;
           const head = Math.floor(drop.row);
           for (let t = 0; t < 5; t += 1) {
             const y = (head - t) * size;
             if (y < -size || y > height + size) continue;
             if (t === 0) {
-              ctx.fillStyle = "rgba(200, 255, 219, 0.95)";
+              ctx.fillStyle = "rgba(224, 255, 236, 1)";
             } else {
-              ctx.fillStyle = `rgba(62, 207, 149, ${(0.7 - t * 0.14).toFixed(2)})`;
+              ctx.fillStyle = `rgba(110, 231, 183, ${(0.85 - t * 0.16).toFixed(2)})`;
             }
             ctx.fillText(
               MATRIX_GLYPHS[(i * 7 + t * 13 + head * 3) % MATRIX_GLYPHS.length],
@@ -220,11 +246,11 @@
         entry.target.classList.add("is-visible");
         observer.unobserve(entry.target);
       });
-    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+    }, { threshold: 0.05, rootMargin: "0px 0px -4% 0px" });
     targets.forEach((el) => {
       const parent = el.parentElement;
       const index = parent ? Array.from(parent.children).indexOf(el) : 0;
-      el.style.setProperty("--reveal-delay", `${Math.min(index * 70, 420)}ms`);
+      el.style.setProperty("--reveal-delay", `${Math.min(index * 30, 180)}ms`);
       observer.observe(el);
     });
   });
@@ -377,6 +403,7 @@
         if (now - last < 4000) return;
         last = now;
         spawnRings(card);
+        spawnWave(card);
         /* масштабная анимация: карточка «дышит» — работает и на телефоне */
         if (!reduced) {
           card.classList.remove("is-egg-zoom");

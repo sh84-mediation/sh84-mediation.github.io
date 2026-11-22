@@ -1665,7 +1665,17 @@ html.lightbox-open {
     font-size: 1.4375rem;
   }
   .section {
-    padding: 26px 0 46px;
+    padding: 28px 0 30px;
+    margin-bottom: 14px;
+    border-radius: 26px;
+  }
+  /* Секции — отдельные карточки с видимым тёмным зазором между ними */
+  .about,
+  .documents,
+  main > .section:not(:first-child):not(.about):not(.documents),
+  main > section:last-child {
+    margin-bottom: 14px;
+    border-radius: 26px;
   }
   .section-head h1,
   .section-head h2 {
@@ -1673,34 +1683,53 @@ html.lightbox-open {
   }
   .principles {
     grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
+    gap: 8px;
   }
   .principle {
-    padding: 16px 16px 18px;
+    padding: 13px 14px 14px;
   }
-  .principle__num,
-  .home-link .principle__num {
-    margin-bottom: 10px;
+  .principle__num {
+    min-width: 26px;
+    height: 21px;
+    margin-bottom: 6px;
+    padding: 0 6px;
+    font-size: 0.625rem;
+  }
+  .principle h2,
+  .principle h3 {
+    margin-bottom: 4px;
+    font-size: 0.90625rem;
+  }
+  .principle p {
+    font-size: 0.75rem;
+    line-height: 1.55;
   }
   .home-links {
-    gap: 10px;
+    gap: 8px;
   }
+  /* Кнопки перехода: стрелка в углу, текст слева — карточка в один «шаг» */
   .home-link {
     min-height: 0;
-    padding: 16px 16px 14px;
+    padding: 13px 58px 13px 14px;
+  }
+  .home-link .principle__num {
+    margin-bottom: 6px;
   }
   .home-link h3 {
-    font-size: 1rem;
+    font-size: 0.9375rem;
   }
   .home-link p {
-    margin-top: 5px;
-    font-size: 0.78125rem;
+    margin-top: 3px;
+    font-size: 0.75rem;
   }
   .home-link__arrow {
-    width: 34px;
-    height: 34px;
-    padding: 9px;
-    margin-top: 12px;
+    position: absolute;
+    top: 13px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    padding: 8px;
   }
   .documents__group {
     padding: 20px 18px 14px;
@@ -1736,10 +1765,9 @@ html.lightbox-open {
     grid-template-columns: minmax(0, 1fr);
   }
   .site-footer {
-    /* Без своих скруглений: белая карточка над подвалом и так
-       даёт дуги на углах — второй радиус создавал щели и «шипы» */
-    border-radius: 0;
-    padding-top: calc(52px + 26px);
+    margin-top: 0;
+    border-radius: 26px 26px 0 0;
+    padding-top: 44px;
   }
   .footer__top {
     grid-template-columns: minmax(0, 1fr);
@@ -2450,8 +2478,8 @@ html {
 /* ---------- Плавное появление при прокрутке ---------- */
 .reveal {
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+  transform: translateY(10px);
+  transition: opacity 0.34s var(--ease), transform 0.34s var(--ease);
   transition-delay: var(--reveal-delay, 0s);
 }
 .reveal.is-visible {
@@ -2993,6 +3021,32 @@ html[data-a11y-scheme="yellow"] .shimmer {
   0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0.9; }
   100% { transform: translate(-50%, -50%) scale(15); opacity: 0; }
 }
+/* Полноэкранная волна «двух сторон за столом» */
+.egg-fx--wave::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--fx-x, 50%) var(--fx-y, 50%), rgba(169, 237, 207, 0.55), rgba(169, 237, 207, 0.14) 42%, transparent 72%);
+  animation: egg-flash 0.95s ease-out forwards;
+}
+@keyframes egg-flash {
+  0% { opacity: 0; }
+  22% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.egg-fx--wave .egg-fx__shock {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  border: 3px solid rgba(169, 237, 207, 0.95);
+  border-radius: 50%;
+  box-shadow: 0 0 26px rgba(169, 237, 207, 0.6), inset 0 0 26px rgba(169, 237, 207, 0.45);
+  animation: egg-shock 1.15s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+@keyframes egg-shock {
+  0% { transform: scale(0.25); opacity: 0.95; }
+  100% { transform: scale(30); opacity: 0; }
+}
 .is-egg-pulse {
   animation: egg-card-pulse 1s ease-out;
 }
@@ -3010,6 +3064,7 @@ html[data-a11y-scheme="yellow"] .shimmer {
   height: 100%;
   pointer-events: none;
   opacity: 1;
+  background: rgba(4, 20, 14, 0.62);
   transition: opacity 0.35s linear;
 }
 .appointment.is-egg-zoom {

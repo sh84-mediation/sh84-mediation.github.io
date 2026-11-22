@@ -1678,9 +1678,19 @@ html.lightbox-open {
     margin-bottom: 14px;
     border-radius: 26px;
   }
-  /* Перед подвалом полосы быть не должно: белая секция уходит прямо в подвал */
+  /* Гасим десктопный «нахлёст» секций: у средних и последней секций
+     оставались прибавка к нижнему паддингу (+48px) и радиус 48px —
+     из-за них низы карточек получались разной высоты с большой пустотой */
+  main > .section:not(:first-child):not(.about):not(.documents),
+  main > section:last-child {
+    padding-bottom: 30px;
+    border-radius: 26px;
+  }
+  /* Перед подвалом полосы быть не должно: карточка заходит под скруглённый
+     верх подвала (как на десктопе), поэтому нижние углы у неё прямые */
   main > section:last-child {
     margin-bottom: 0;
+    border-radius: 26px 26px 0 0;
   }
   .section-head h1,
   .section-head h2 {
@@ -1770,7 +1780,10 @@ html.lightbox-open {
     grid-template-columns: minmax(0, 1fr);
   }
   .site-footer {
-    margin-top: 0;
+    /* подвал заходит на нижние 26px карточки: его скруглённые углы
+       ложатся на белый фон секции, «ушек» на стыке не остаётся */
+    margin-top: -26px;
+    z-index: 4;
     border-radius: 26px 26px 0 0;
     padding-top: 44px;
   }

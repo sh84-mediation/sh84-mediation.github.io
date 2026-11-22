@@ -73,27 +73,27 @@
     });
   };
 
-  /* ---------- Полноэкранная волна (две стороны за столом) ---------- */
-  const spawnWave = (anchor) => {
+  /* ---------- Полноэкранная «арка согласия» (две стороны за столом) ---------- */
+  const spawnDeal = (anchor) => {
     if (reduced) return;
     safe(() => {
       const layer = document.createElement("div");
-      layer.className = "egg-fx egg-fx--wave";
+      layer.className = "egg-fx egg-fx--deal";
       layer.setAttribute("aria-hidden", "true");
-      let center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+      layer.innerHTML =
+        '<b class="egg-deal__band egg-deal__band--left"></b>' +
+        '<b class="egg-deal__band egg-deal__band--right"></b>' +
+        '<svg class="egg-deal__mark" viewBox="0 0 96 96" fill="none">' +
+        '<circle cx="48" cy="48" r="42"></circle>' +
+        '<path d="M30 50l13 13 24-28"></path>' +
+        "</svg>";
+      document.body.appendChild(layer);
       if (anchor) {
         const rect = anchor.getBoundingClientRect();
-        center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+        layer.style.setProperty("--fx-x", `${(((rect.left + rect.width / 2) / window.innerWidth) * 100).toFixed(1)}%`);
+        layer.style.setProperty("--fx-y", `${(((rect.top + rect.height / 2) / window.innerHeight) * 100).toFixed(1)}%`);
       }
-      layer.style.setProperty("--fx-x", `${((center.x / window.innerWidth) * 100).toFixed(1)}%`);
-      layer.style.setProperty("--fx-y", `${((center.y / window.innerHeight) * 100).toFixed(1)}%`);
-      const shock = document.createElement("i");
-      shock.className = "egg-fx__shock";
-      shock.style.left = `${center.x}px`;
-      shock.style.top = `${center.y}px`;
-      layer.appendChild(shock);
-      document.body.appendChild(layer);
-      window.setTimeout(() => layer.remove(), 1500);
+      window.setTimeout(() => layer.remove(), 2600);
     });
   };
 
@@ -403,7 +403,7 @@
         if (now - last < 4000) return;
         last = now;
         spawnRings(card);
-        spawnWave(card);
+        spawnDeal(card);
         /* масштабная анимация: карточка «дышит» — работает и на телефоне */
         if (!reduced) {
           card.classList.remove("is-egg-zoom");
@@ -419,18 +419,18 @@
 
   /* ---------- Встряска телефона: конфетти-взрыв без текста ---------- */
   const CONFETTI_COLORS = ["#0d6b4f", "#3ecf95", "#a9edcf", "#f2c14e", "#1d8f6a", "#eafff4"];
-  const spawnConfetti = () => {
+  const spawnConfetti = (sx, sy) => {
     if (reduced) return;
     safe(() => {
       const layer = document.createElement("div");
       layer.className = "confetti-layer";
       layer.setAttribute("aria-hidden", "true");
       document.body.appendChild(layer);
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight * 0.55;
+      const cx = typeof sx === "number" ? sx : window.innerWidth / 2;
+      const cy = typeof sy === "number" ? sy : window.innerHeight * 0.55;
       const power = Math.min(window.innerWidth, window.innerHeight) * 0.024 + 5;
       const pieces = [];
-      for (let i = 0; i < 84; i += 1) {
+      for (let i = 0; i < 150; i += 1) {
         const piece = document.createElement("i");
         const size = 7 + Math.random() * 8;
         piece.style.width = `${size.toFixed(1)}px`;
@@ -449,7 +449,7 @@
           rot: Math.random() * 360,
           spin: (Math.random() - 0.5) * 26,
           life: 0,
-          ttl: 85 + Math.random() * 45,
+          ttl: 150 + Math.random() * 70,
         });
       }
       const step = () => {
@@ -458,9 +458,9 @@
           p.life += 1;
           if (p.life >= p.ttl || p.y > window.innerHeight + 40) return;
           alive += 1;
-          p.vy += 0.5; /* гравитация */
-          p.vx *= 0.985; /* сопротивление воздуха */
-          p.vy *= 0.985;
+          p.vy += 0.45; /* гравитация */
+          p.vx *= 0.986; /* сопротивление воздуха */
+          p.vy *= 0.986;
           p.x += p.vx;
           p.y += p.vy;
           p.rot += p.spin;
@@ -475,7 +475,7 @@
         }
       };
       window.requestAnimationFrame(step);
-      window.setTimeout(() => layer.remove(), 5000); /* страховка */
+      window.setTimeout(() => layer.remove(), 7500); /* страховка */
     });
   };
   safe(() => {
@@ -525,5 +525,20 @@
     };
     window.addEventListener("touchend", arm, { once: true, passive: true });
     window.addEventListener("click", arm, { once: true });
+  });
+
+  /* ---------- Двойной клик по фону: конфетти на любом устройстве ----------
+     Работает во всех разделах: встряска доступна только телефонам,
+     а двойной клик — и компьютеру, и тач-экрану. */
+  safe(() => {
+    document.addEventListener("dblclick", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (target.closest("a, button, input, textarea, select, label, summary, dialog, .menu-toggle, .a11y-panel, .egg-spot__btn")) return;
+      spawnConfetti(
+        event.clientX || window.innerWidth / 2,
+        event.clientY || window.innerHeight * 0.55
+      );
+    });
   });
 })();
